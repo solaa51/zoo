@@ -2,10 +2,10 @@ package fileMonitor
 
 import (
 	"bufio"
+	"github.com/solaa51/zoo/system/mLog"
 	"os"
 	"sync"
 	"time"
-	"zoo/system/mLog"
 )
 
 //结构

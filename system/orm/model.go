@@ -3,12 +3,12 @@ package orm
 import (
 	"errors"
 	"github.com/BurntSushi/toml"
+	"github.com/solaa51/zoo/system/cFunc"
+	"github.com/solaa51/zoo/system/mLog"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	"zoo/system/cFunc"
-	"zoo/system/mLog"
 )
 
 /*

@@ -6,13 +6,13 @@ import (
 	rotateLogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/rifflock/lfshook"
 	log "github.com/sirupsen/logrus"
+	"github.com/solaa51/zoo/system/cFunc"
 	"io"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
-	"zoo/system/cFunc"
 )
 
 var env string

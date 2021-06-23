@@ -2,11 +2,11 @@ package config
 
 import (
 	"errors"
+	"github.com/solaa51/zoo/system/cFunc"
+	"github.com/solaa51/zoo/system/library/fileMonitor"
+	"github.com/solaa51/zoo/system/mLog"
 	"os"
 	"strings"
-	"zoo/system/cFunc"
-	"zoo/system/library/fileMonitor"
-	"zoo/system/mLog"
 )
 
 var config = New("app.toml")

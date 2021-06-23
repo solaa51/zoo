@@ -2,6 +2,7 @@ package mLog
 
 import (
 	"fmt"
+	"github.com/solaa51/zoo/system/cFunc"
 	"io"
 	"log"
 	"os"
@@ -9,7 +10,6 @@ import (
 	"runtime"
 	"strconv"
 	"sync"
-	"zoo/system/cFunc"
 )
 
 // NLog 用于处理少量日志

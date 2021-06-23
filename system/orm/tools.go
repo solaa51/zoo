@@ -2,9 +2,9 @@ package orm
 
 import (
 	"fmt"
+	"github.com/solaa51/zoo/system/mLog"
 	"strconv"
 	"strings"
-	"zoo/system/mLog"
 )
 
 // TableToStruct 将数据库表 转换为struct结构输出
