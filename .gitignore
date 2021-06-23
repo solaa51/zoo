@@ -7,7 +7,6 @@ t.go
 lianServer
 
 chromeUserData
-go.sum
 
 # Folders
 _obj
