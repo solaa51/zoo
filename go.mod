@@ -1,4 +1,4 @@
-module zoo
+module github.com/solaa51/zoo
 
 go 1.16
 
