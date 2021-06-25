@@ -299,16 +299,8 @@ func Time() int64 {
 // 仅支持最常用的 Y-m-d H:i:s
 // 仅支持最常用的 Y-m-d
 // stamp 时间戳 如果为0则处理为当前时间
-func StrToTime(phpFormat string, stamp int64) int64 {
-	var st time.Time
-	if stamp == 0 {
-		st = time.Now()
-	} else {
-		st = time.Unix(stamp, 0)
-	}
-
+func StrToTime(phpFormat string, timeStr string) int64 {
 	var format string
-	var str string
 	switch phpFormat {
 	case "Y-m-d":
 		format = strings.Split(TIME_STR, " ")[0]
@@ -318,9 +310,8 @@ func StrToTime(phpFormat string, stamp int64) int64 {
 		return 0
 	}
 
-	str = st.Format(format)
 	timeArea, _ := time.LoadLocation("Asia/Shanghai")
-	tt, _ := time.ParseInLocation(format, str, timeArea)
+	tt, _ := time.ParseInLocation(format, timeStr, timeArea)
 	return tt.Unix()
 }
 
