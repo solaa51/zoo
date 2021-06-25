@@ -295,9 +295,30 @@ func Time() int64 {
 }
 
 // StrToTime 将时间字符串 转换为 时间戳
-//当前仅支持格式：2006-01-02 15:04:05
-func StrToTime(str string) int64 {
-	format := TIME_STR
+// 将时间戳 转换为 指定时间格式 对应的 时间戳
+// 仅支持最常用的 Y-m-d H:i:s
+// 仅支持最常用的 Y-m-d
+// stamp 时间戳 如果为0则处理为当前时间
+func StrToTime(phpFormat string, stamp int64) int64 {
+	var st time.Time
+	if stamp == 0 {
+		st = time.Now()
+	} else {
+		st = time.Unix(stamp, 0)
+	}
+
+	var format string
+	var str string
+	switch phpFormat {
+	case "Y-m-d":
+		format = strings.Split(TIME_STR, " ")[0]
+	case "Y-m-d H:i:s":
+		format = TIME_STR
+	default:
+		return 0
+	}
+
+	str = st.Format(format)
 	timeArea, _ := time.LoadLocation("Asia/Shanghai")
 	tt, _ := time.ParseInLocation(format, str, timeArea)
 	return tt.Unix()
