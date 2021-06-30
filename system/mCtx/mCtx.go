@@ -272,7 +272,7 @@ func (c *Con) CheckParamInt(param string, dec string, request bool, min int64, m
 
 // YewuParamInt 按字段名 获取业务参数
 func (c *Con) YewuParamInt(param string, dec string, request bool, min int64, max int64) (int64, error) {
-	if config.Info().Env == "test" { //本地环境时切换处理函数
+	if config.Info().Env == "test" && c.YewuParam == nil { //本地环境时切换处理函数
 		return c.CheckParamInt(param, dec, request, min, max)
 	}
 
@@ -316,7 +316,7 @@ func (c *Con) YewuParamInt(param string, dec string, request bool, min int64, ma
 
 // YewuParamString 业务参数检测并转换为string
 func (c *Con) YewuParamString(param string, dec string, request bool, min int64, max int64) (string, error) {
-	if config.Info().Env == "test" { //本地环境时切换处理函数
+	if config.Info().Env == "test" && c.YewuParam == nil { //本地环境时切换处理函数
 		return c.CheckParamString(param, dec, request, min, max)
 	}
 
