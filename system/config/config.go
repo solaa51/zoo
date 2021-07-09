@@ -20,6 +20,14 @@ type Http struct {
 	HTTPSPEM string `toml:"httpsPem"`
 }
 
+// StaticConfig 静态文件匹配配置
+type StaticConfig struct {
+	Prefix    string `toml:"prefix"`    //html js等引入文件的前缀路径
+	LocalPath string `toml:"localPath"` //对应的本地路径 为空则表示不替换
+	Index     string `toml:"index"`     //默认查找的文件 必须填写
+	Dir       bool   `toml:"dir"`       //是否允许遍历文件
+}
+
 type Config struct {
 	AppName    string `toml:"appName"`    //程序名称
 	AppVersion string `toml:"appVersion"` //程序版本号
@@ -44,6 +52,7 @@ type Config struct {
 	ipPass           map[string]bool //map存储 指定允许通过的IP列表 方便查询
 	IgnoreIpCheck    string          `toml:"ignoreIpCheck"` //忽略IP检查的类
 	ignoreIpClass    map[string]bool //map存储忽略IP检查的类 方便查询
+	StaticFiles      []StaticConfig  `toml:"staticFiles"`
 	//**********允许实时更新项***********//
 }
 
@@ -208,6 +217,8 @@ func resetConfig(con *Config, configFileName string) {
 	con.IpCheck = cc.IpCheck
 	con.IpPass = cc.IpPass
 	con.IgnoreIpCheck = cc.IgnoreIpCheck
+
+	con.StaticFiles = cc.StaticFiles
 
 	//忽略签名检查的类
 	iSc := strings.Split(con.IgnoreSignCheck, ",")
