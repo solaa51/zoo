@@ -25,7 +25,6 @@ type StaticConfig struct {
 	Prefix    string `toml:"prefix"`    //html js等引入文件的前缀路径
 	LocalPath string `toml:"localPath"` //对应的本地路径 为空则表示不替换
 	Index     string `toml:"index"`     //默认查找的文件 必须填写
-	Dir       bool   `toml:"dir"`       //是否允许遍历文件
 }
 
 type Config struct {

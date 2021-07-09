@@ -10,9 +10,11 @@ import (
 	"github.com/solaa51/zoo/system/mLog"
 	"github.com/solaa51/zoo/system/router"
 	"net/http"
+	"os"
 	"reflect"
 	"runtime"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -42,11 +44,83 @@ type MHandle struct {
 	ctx     context.Context
 }
 
+// 静态文件匹配
+func (m *MHandle) staticFiles(r *http.Request) (string, error) {
+	//如果文件为铭感文件 则直接404
+	if strings.HasSuffix(r.URL.Path, ".go") || strings.HasSuffix(r.URL.Path, ".php") || strings.HasSuffix(r.URL.Path, ".toml") || strings.HasSuffix(r.URL.Path, ".log") || strings.HasSuffix(r.URL.Path, ".md") {
+		return "", errors.New("404")
+	}
+
+	//如果urlPath为空或首字符不是/ 则返回404
+	if len(r.URL.Path) == 0 || r.URL.Path[0] != '/' {
+		return "", errors.New("404")
+	}
+
+	urlPath := r.URL.Path[1:]
+	if urlPath != "" && urlPath[len(urlPath)-1] == '/' {
+		urlPath = urlPath[:len(urlPath)-1]
+	}
+
+	//进入静态文件配置信息判断
+	//先判断外层目录是否存在该信息
+	if urlPath != "" {
+		if f, err := os.Stat(urlPath); err == nil {
+			if !f.IsDir() {
+				return urlPath, nil
+			}
+		}
+	}
+
+	//判断配置文件中的配置
+	for _, v := range config.Info().StaticFiles {
+		pp := urlPath
+		if pp != "" {
+			if !strings.HasPrefix(pp, v.Prefix) {
+				continue
+			}
+			//替换路径
+			if v.LocalPath != "" {
+				pp = strings.Replace(pp, v.Prefix, v.LocalPath, 1)
+			}
+		} else {
+			//取目录下的index配置文件
+			if v.LocalPath != "" {
+				pp = v.LocalPath
+			} else {
+				pp = v.Prefix
+			}
+			pp += v.Index
+		}
+
+		//判断是否为文件
+		//fmt.Println("新PAth为：", pp)
+		if f, err := os.Stat(pp); err == nil {
+			if !f.IsDir() {
+				return pp, nil
+			} else { //如果为目录 则查找目录下的index配置文件
+				//fmt.Println("新2PAth为：", pp)
+				if f2, err := os.Stat(pp + "/" + v.Index); err == nil {
+					if !f2.IsDir() {
+						return pp + "/" + v.Index, nil
+					}
+				}
+			}
+		}
+	}
+
+	return "", nil
+}
+
 // http请求调用入口
 func (m *MHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//处理静态文件请求
-	if r.URL.String() == "/favicon.ico" {
-		http.ServeFile(w, r, "./favicon.ico")
+	sFile, err := m.staticFiles(r)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	if sFile != "" {
+		http.ServeFile(w, r, sFile)
 		return
 	}
 
