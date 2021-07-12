@@ -397,6 +397,8 @@ func (c *Con) JsonReturn(code int, data interface{}, format string, a ...interfa
 		Data: data,
 	}
 
+	header := c.ResponseWriter.Header()
+	header.Set("Content-Type", "application/json;charset=UTF-8")
 	b, _ := jsoniter.Marshal(st)
 	n, err := c.ResponseWriter.Write(b)
 	if err != nil {
