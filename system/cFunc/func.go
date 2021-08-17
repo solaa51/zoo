@@ -288,6 +288,21 @@ func RandInt(start, end int64) (int64, error) {
 	return n.Int64() + start, nil
 }
 
+// RandInt2 生成随机数[n - m)
+func RandInt2(start, end int64) int64 {
+	if end < start {
+		return start
+	}
+
+	if end == start {
+		return start
+	}
+
+	n, _ := rand.Int(rand.Reader, big.NewInt(end-start))
+
+	return n.Int64() + start
+}
+
 // Time 时间函数 参考PHP返回 Go的记起来有点累
 func Time() int64 {
 	var cstSh, _ = time.LoadLocation("Asia/Shanghai")
