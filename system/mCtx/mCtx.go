@@ -182,7 +182,8 @@ type YewuParam = map[string]interface{}
 // request 是否必填
 // min 0不判断最小长度
 // max 0 强制max = 65535 判断最大长度
-func (c *Con) CheckParamString(param string, dec string, request bool, min int64, max int64) (string, error) {
+// def 默认值
+func (c *Con) CheckParamString(param string, dec string, request bool, min int64, max int64, def string) (string, error) {
 	var tmp string
 	if request {
 		if c.GetPost[param] == nil {
@@ -194,7 +195,7 @@ func (c *Con) CheckParamString(param string, dec string, request bool, min int64
 		}
 	} else {
 		if c.GetPost[param] == nil {
-			tmp = ""
+			tmp = def
 		} else {
 			tmp = strings.TrimSpace(c.GetPost[param][0])
 		}
@@ -235,7 +236,7 @@ max 最大允许值
 // request 是否必填
 // min 最小值
 // max 最大允许值
-func (c *Con) CheckParamInt(param string, dec string, request bool, min int64, max int64) (int64, error) {
+func (c *Con) CheckParamInt(param string, dec string, request bool, min int64, max int64, def string) (int64, error) {
 	var tmp string
 	if request { //判断必填
 		if c.GetPost[param] == nil {
@@ -247,7 +248,7 @@ func (c *Con) CheckParamInt(param string, dec string, request bool, min int64, m
 		}
 	} else {
 		if c.GetPost[param] == nil {
-			tmp = ""
+			tmp = def
 		} else {
 			tmp = strings.TrimSpace(c.GetPost[param][0])
 		}
@@ -271,9 +272,9 @@ func (c *Con) CheckParamInt(param string, dec string, request bool, min int64, m
 }
 
 // YewuParamInt 按字段名 获取业务参数
-func (c *Con) YewuParamInt(param string, dec string, request bool, min int64, max int64) (int64, error) {
+func (c *Con) YewuParamInt(param string, dec string, request bool, min int64, max int64, def string) (int64, error) {
 	if config.Info().Env == "test" && c.YewuParam == nil { //本地环境时切换处理函数
-		return c.CheckParamInt(param, dec, request, min, max)
+		return c.CheckParamInt(param, dec, request, min, max, def)
 	}
 
 	if request {
@@ -294,7 +295,7 @@ func (c *Con) YewuParamInt(param string, dec string, request bool, min int64, ma
 		case float64:
 			paramInt = int64(c.YewuParam[param].(float64))
 		default:
-			paramInt = 0
+			paramInt, _ = strconv.ParseInt(def, 10, 64)
 		}
 	} else {
 		paramInt = 0
@@ -315,9 +316,9 @@ func (c *Con) YewuParamInt(param string, dec string, request bool, min int64, ma
 }
 
 // YewuParamString 业务参数检测并转换为string
-func (c *Con) YewuParamString(param string, dec string, request bool, min int64, max int64) (string, error) {
+func (c *Con) YewuParamString(param string, dec string, request bool, min int64, max int64, def string) (string, error) {
 	if config.Info().Env == "test" && c.YewuParam == nil { //本地环境时切换处理函数
-		return c.CheckParamString(param, dec, request, min, max)
+		return c.CheckParamString(param, dec, request, min, max, def)
 	}
 
 	if request {
@@ -338,10 +339,10 @@ func (c *Con) YewuParamString(param string, dec string, request bool, min int64,
 		case float64:
 			ps = strconv.FormatFloat(c.YewuParam[param].(float64), 'f', -1, 64)
 		default:
-			ps = ""
+			ps = def
 		}
 	} else {
-		ps = ""
+		ps = def
 	}
 
 	//获得字符长度
@@ -406,4 +407,69 @@ func (c *Con) JsonReturn(code int, data interface{}, format string, a ...interfa
 		return
 	}
 	panic(JSONRETURN)
+}
+
+//用于批量检查参数合法性
+type checkType int
+
+const (
+	CHECK_INT    checkType = 0
+	CHECK_STRING checkType = 1
+)
+
+// CheckField 用于检查数据的结构信息
+// checkType 当前仅支持int64 和 string
+// max = 0 表示不限制长度/大小
+// reg数据校验，多个用|分割
+// 待支持：mobile email ...
+type CheckField struct {
+	Name    string
+	Dec     string
+	Tpe     checkType
+	Request bool   //是否必填
+	Def     string //默认值
+	Min     int64  //最小值或最小长度
+	Max     int64  //最大值或最大长度
+	Yewu    bool   //是否为业务参数
+	Reg     string //正则规则校验
+}
+
+// CheckField 批量检查参数是否合法
+func (c *Con) CheckField(fields []*CheckField) (map[string]interface{}, error) {
+	if len(fields) == 0 {
+		return nil, nil
+	}
+
+	ret := make(map[string]interface{}, 0)
+	var tmp interface{}
+	var err error
+	for _, v := range fields {
+		if v.Yewu {
+			switch v.Tpe {
+			case CHECK_INT:
+				tmp, err = c.YewuParamInt(v.Name, v.Dec, v.Request, v.Min, v.Max, v.Def)
+			case CHECK_STRING:
+				tmp, err = c.YewuParamString(v.Name, v.Dec, v.Request, v.Min, v.Max, v.Def)
+			default:
+				return nil, errors.New("暂不支持的数据类型检测")
+			}
+		} else {
+			switch v.Tpe {
+			case CHECK_INT:
+				tmp, err = c.CheckParamInt(v.Name, v.Dec, v.Request, v.Min, v.Max, v.Def)
+			case CHECK_STRING:
+				tmp, err = c.CheckParamString(v.Name, v.Dec, v.Request, v.Min, v.Max, v.Def)
+			default:
+				return nil, errors.New("暂不支持的数据类型检测")
+			}
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		ret[v.Name] = tmp
+	}
+
+	return ret, nil
 }
