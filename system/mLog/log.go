@@ -66,9 +66,9 @@ func init() {
 	writer, err := rotateLogs.New(
 		//logFullPath+"-"+fileSuffix,
 		logFullPath+".%Y-%m-%d",
-		rotateLogs.WithLinkName(logFullPath),     // 生成软链，指向最新日志文
-		rotateLogs.WithRotationCount(5),          // 文件最大保存份数
-		rotateLogs.WithRotationTime(1*time.Hour), // 日志切割时间间隔
+		rotateLogs.WithLinkName(logFullPath),      // 生成软链，指向最新日志文
+		rotateLogs.WithRotationCount(5),           // 文件最大保存份数
+		rotateLogs.WithRotationTime(24*time.Hour), // 日志切割时间间隔
 	)
 
 	if err != nil {
