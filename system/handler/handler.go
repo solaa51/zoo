@@ -190,7 +190,10 @@ func (m *MHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}()
-	//调用方法
+
+	// TODO 检测是否存在"初始调用"函数 如果存在则优先调用 PreInit() 方法
+
+	//调用url所对应的方法
 	call.Call(args)
 
 	/*//调用方式二:
@@ -261,6 +264,7 @@ func (m *MHandle) parseCompile(className string) (control.Control, error) {
 		return nil, errors.New("404 class not found")
 	}
 
+	//调用 函数 返回实例化后的对象
 	return m.compile[className](), nil
 }
 
