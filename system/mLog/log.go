@@ -62,13 +62,15 @@ func init() {
 
 	//日志拆分配置 最长保留7天 24小时更新一次日志
 	logFullPath := cFunc.GetAppDir() + "logs/log"
-	fileSuffix := time.Now().Format("2006-01-02") + ".log"
+	//fileSuffix := time.Now().Format("2006-01-02") + ".log"
 	writer, err := rotateLogs.New(
-		logFullPath+"-"+fileSuffix,
-		rotateLogs.WithLinkName(logFullPath),      // 生成软链，指向最新日志文
-		rotateLogs.WithRotationCount(2),           // 文件最大保存份数
-		rotateLogs.WithRotationTime(24*time.Hour), // 日志切割时间间隔
+		//logFullPath+"-"+fileSuffix,
+		logFullPath+".%Y-%m-%d",
+		rotateLogs.WithLinkName(logFullPath),     // 生成软链，指向最新日志文
+		rotateLogs.WithRotationCount(5),          // 文件最大保存份数
+		rotateLogs.WithRotationTime(1*time.Hour), // 日志切割时间间隔
 	)
+
 	if err != nil {
 		log.Fatal("配置本地日志存储出错:", err)
 	}
