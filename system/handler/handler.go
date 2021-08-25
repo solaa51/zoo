@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/solaa51/zoo/system/cFunc"
 	"github.com/solaa51/zoo/system/config"
 	"github.com/solaa51/zoo/system/control"
@@ -272,19 +271,16 @@ func (m *MHandle) parseCompile(className string) (control.Control, error) {
 
 // 检查是否包含初始化函数，如果存在，则先调用
 func (m *MHandle) checkPreInit(control control.Control) {
-	fmt.Println("检查初始化方法")
 	methodName := "PreInit"
 	getType := reflect.TypeOf(control)
 	_, bol := getType.MethodByName(methodName) //判断是否存在调用的方法
 	if !bol {
-		fmt.Println("没有找到初始化方法")
 		return
 	}
 
 	getValue := reflect.ValueOf(control)
 	method := getValue.MethodByName(methodName)
 
-	fmt.Println("调用初始化方法")
 	method.Call(make([]reflect.Value, 0))
 	return
 }
