@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/solaa51/zoo/system/cFunc"
 	"github.com/solaa51/zoo/system/config"
 	"github.com/solaa51/zoo/system/control"
@@ -192,6 +193,7 @@ func (m *MHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// TODO 检测是否存在"初始调用"函数 如果存在则优先调用 PreInit() 方法
+	m.checkPreInit(controlInterface)
 
 	//调用url所对应的方法
 	call.Call(args)
@@ -266,6 +268,25 @@ func (m *MHandle) parseCompile(className string) (control.Control, error) {
 
 	//调用 函数 返回实例化后的对象
 	return m.compile[className](), nil
+}
+
+// 检查是否包含初始化函数，如果存在，则先调用
+func (m *MHandle) checkPreInit(control control.Control) {
+	fmt.Println("检查初始化方法")
+	methodName := "PreInit"
+	getType := reflect.TypeOf(control)
+	_, bol := getType.MethodByName(methodName) //判断是否存在调用的方法
+	if !bol {
+		fmt.Println("没有找到初始化方法")
+		return
+	}
+
+	getValue := reflect.ValueOf(control)
+	method := getValue.MethodByName(methodName)
+
+	fmt.Println("调用初始化方法")
+	method.Call(make([]reflect.Value, 0))
+	return
 }
 
 // 映射校验方法以及参数
