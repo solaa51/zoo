@@ -75,7 +75,7 @@ func IgnoreSign(className string) bool {
 
 // IpPassCheck 检查IP是否允许通过
 // 如果为测试环境 则内网IP 直接通过
-func IpPassCheck(ip string) bool {
+func IpPassCheck(ip string, className string) bool {
 	//如果为测试环境 或内网IP 则直接通过
 	if config.Env == "test" || cFunc.InnerIP(ip) {
 		return true
@@ -88,7 +88,7 @@ func IpPassCheck(ip string) bool {
 		}
 
 		//忽略列表
-		if config.ignoreIp(ip) {
+		if config.ignoreIpCheckClass(className) {
 			return true
 		}
 
@@ -99,7 +99,7 @@ func IpPassCheck(ip string) bool {
 }
 
 // IgnoreIp 是否忽略ip检查
-func (c *Config) ignoreIp(className string) bool {
+func (c *Config) ignoreIpCheckClass(className string) bool {
 	if _, ok := c.ignoreIpClass[className]; ok {
 		return true
 	}

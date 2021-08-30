@@ -132,7 +132,7 @@ func (m *MHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//检查IP 是否允许通过
-	if !config.IpPassCheck(cFunc.ClientIP(r)) {
+	if !config.IpPassCheck(cFunc.ClientIP(r), className) {
 		mLog.Warn(cFunc.ClientIP(r) + " - " + r.RequestURI + " - " + className + "-" + methodName + " - IP被禁止")
 		http.Error(w, cFunc.ClientIP(r)+"被禁止", http.StatusNotFound)
 		return
