@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"crypto/md5"
 	"crypto/rand"
-	"crypto/tls"
 	"encoding/hex"
 	"errors"
 	"github.com/BurntSushi/toml"
@@ -195,11 +194,11 @@ func GetPost(method string, sUrl string, data map[string]string, head map[string
 	}
 
 	client := &http.Client{
-		Transport: &http.Transport{
+		/*Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true, //跳过https验证
 			},
-		},
+		},*/
 	}
 	response, err := client.Do(req)
 	if err != nil {
