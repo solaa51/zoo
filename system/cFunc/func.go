@@ -7,6 +7,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"github.com/BurntSushi/toml"
 	jsoniter "github.com/json-iterator/go"
 	"golang.org/x/text/encoding/simplifiedchinese"
@@ -22,6 +23,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -29,6 +31,63 @@ import (
 
 const TIME_STR = "2006-01-02 15:04:05"
 const TIME_STRS = "2006-01-02 15:04"
+
+// Go 用于开启一个goroutine
+func Go(x func()) {
+	go func() {
+		defer func() {
+			if err := recover(); err != nil {
+				//记录错误日志
+				log.Println(err)
+			}
+		}()
+		x()
+	}()
+}
+
+// SortBuildQuery 只支持一级 生成url 查询字符串
+func SortBuildQuery(data map[string]interface{}) string {
+	key := make([]string, len(data))
+	for k, _ := range data {
+		key = append(key, k)
+	}
+
+	sort.Strings(key)
+
+	str := ""
+	for k, v := range key {
+		if k > 0 {
+			str += "&"
+		}
+
+		str += url.QueryEscape(v) + "=" + url.QueryEscape(interfaceToString(data[v]))
+	}
+
+	return str
+}
+
+//任意简单类型转字符串
+func interfaceToString(v interface{}) string {
+	var ps string
+	if v != nil {
+		switch v.(type) {
+		case int:
+			ps = strconv.Itoa(v.(int))
+		case int64:
+			ps = strconv.FormatInt(v.(int64), 10)
+		case string:
+			ps = v.(string)
+		case float64:
+			ps = fmt.Sprintf("%.2f", v.(float64))
+		default:
+			ps = ""
+		}
+	} else {
+		ps = ""
+	}
+
+	return ps
+}
 
 func Md5(s string) string {
 	md5Str := md5.New()
