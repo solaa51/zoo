@@ -50,7 +50,7 @@ func SortBuildQuery(data map[string]interface{}) string {
 	key := make([]string, len(data))
 	i := 0
 	for k, _ := range data {
-		key = append(key, k)
+		//key = append(key, k)
 		key[i] = k
 		i++
 	}
