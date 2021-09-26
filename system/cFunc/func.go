@@ -48,8 +48,11 @@ func Go(x func()) {
 // SortBuildQuery 只支持一级 生成url 查询字符串
 func SortBuildQuery(data map[string]interface{}) string {
 	key := make([]string, len(data))
+	i := 0
 	for k, _ := range data {
 		key = append(key, k)
+		key[i] = k
+		i++
 	}
 
 	sort.Strings(key)
