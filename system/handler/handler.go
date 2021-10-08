@@ -61,12 +61,19 @@ func (m *MHandle) staticFiles(r *http.Request) (string, error) {
 		urlPath = urlPath[:len(urlPath)-1]
 	}
 
+	// 防止恶意路由 遍历目录
+	if strings.Index(urlPath, "./") >= 0 {
+		return "", errors.New("404")
+	}
+
+	baseUrl := cFunc.GetAppDir()
+
 	//进入静态文件配置信息判断
 	//先判断外层目录是否存在该信息
 	if urlPath != "" {
-		if f, err := os.Stat(urlPath); err == nil {
+		if f, err := os.Stat(baseUrl + urlPath); err == nil {
 			if !f.IsDir() {
-				return urlPath, nil
+				return baseUrl + urlPath, nil
 			}
 		}
 	}
@@ -94,14 +101,14 @@ func (m *MHandle) staticFiles(r *http.Request) (string, error) {
 
 		//判断是否为文件
 		//fmt.Println("新PAth为：", pp)
-		if f, err := os.Stat(pp); err == nil {
+		if f, err := os.Stat(baseUrl + pp); err == nil {
 			if !f.IsDir() {
-				return pp, nil
+				return baseUrl + pp, nil
 			} else { //如果为目录 则查找目录下的index配置文件
 				//fmt.Println("新2PAth为：", pp)
-				if f2, err := os.Stat(pp + "/" + v.Index); err == nil {
+				if f2, err := os.Stat(baseUrl + pp + "/" + v.Index); err == nil {
 					if !f2.IsDir() {
-						return pp + "/" + v.Index, nil
+						return baseUrl + pp + "/" + v.Index, nil
 					}
 				}
 			}
