@@ -273,19 +273,6 @@ func GetPost(method string, sUrl string, data map[string]string, head map[string
 	}
 	response.Body.Close()
 
-	if len(body) == 0 { //二次重试请求
-		res2, err := client.Do(req)
-		if err != nil {
-			return "", err
-		}
-
-		body2, err := ioutil.ReadAll(res2.Body)
-		if err != nil {
-			return "", err
-		}
-		return string(body2), nil
-	}
-
 	return string(body), nil
 }
 
