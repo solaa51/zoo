@@ -94,7 +94,7 @@ func (_ *myLogFormat) Format(entry *log.Entry) ([]byte, error) {
 	var file string
 	var funcName string
 	var line int
-	if env == "test" {
+	if env == "test" || entry.Level == log.ErrorLevel || entry.Level == log.WarnLevel || entry.Level == log.DebugLevel {
 		//调用内置的caller不能跳过mLog包  这部分需要自己实现 10是该项目下适合的调用位置索引
 		var pc uintptr
 		var ok bool
