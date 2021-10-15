@@ -1,0 +1,60 @@
+#配置文件
+appName = "zoo 服务中心"
+appVersion = "3.0"
+appVerMark = "基础版本"
+
+##########以下配置修改 会实时生效 start ############
+#环境标识  发布dev   测试test
+env = "test"
+
+#不需要签名的class  只有在encrypt-signCheck为true时生效
+ignoreSignCheck = "test"
+
+#允许通过的ip 多个,隔开  没有则表示允许通过
+ipCheck = false
+ipPass = ""
+#不需要校验ip的class 只有在ipCheck为true时生效  多个,隔开
+ignoreIpCheck = ""
+
+# 静态文件html 可配置多个，自行修改，没有可删除
+[[staticFiles]]
+    # html代码内的前缀路径
+    prefix = "promoter_gmzs/"
+    # 本地存储的真实目录
+    localPath = "dist/"
+    index = "index.html"
+##########以下配置修改 会实时生效 end ############
+
+[snackWorker]
+    workerId = 1
+
+
+#http配置
+[http]
+    http = true
+    https = false
+    port = ":8079"
+    httpsPem = "config/ssl/ssl.pem"
+    httpsKey = "config/ssl/ssl.key"
+
+#http 服务请求加密校验方式
+[encrypt]
+    signCheck = true
+    ipCheck = true
+    type = "md5"
+    [[encrypt.keys]]
+        key = "567988e9bfb"
+        value = "89937DCF455668A792DD8582F53441FD"
+    [[encrypt.keys]]
+        key = "9ferddfe9bbb"
+        value = "567ferddfe9qwertygh364578e9bbb"
+
+#http pprof性能监控
+#访问/debug/pprof
+#此为敏感数据 注意不要对外开放
+[pprof]
+    http = false
+    https = false
+    port = ":8080"
+    httpsPem = "ssl/ssl.pem"
+    httpsKey = "ssl/ssl.key"
