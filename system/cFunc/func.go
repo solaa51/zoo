@@ -271,7 +271,7 @@ func GetPost(method string, sUrl string, data map[string]string, head map[string
 	if err != nil {
 		return "", err
 	}
-	response.Body.Close()
+	defer response.Body.Close()
 
 	return string(body), nil
 }
