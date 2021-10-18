@@ -8,17 +8,17 @@ import (
 )
 
 var (
-	// Epoch is set to the twitter snowflake epoch of Nov 04 2010 01:42:54 UTC in milliseconds
+	// epoch is set to the twitter snowflake epoch of Nov 04 2010 01:42:54 UTC in milliseconds
 	// You may customize this to set a different epoch for your application.
-	Epoch int64 = 1288834974657
+	epoch int64 = 1288834974657
 
-	// NodeBits holds the number of bits to use for Node
+	// nodeBits holds the number of bits to use for Node
 	// Remember, you have a total 22 bits to share between Node/Step
-	NodeBits uint8 = 10
+	nodeBits uint8 = 10
 
 	// StepBits holds the number of bits to use for Step
 	// Remember, you have a total 22 bits to share between Node/Step
-	StepBits uint8 = 12
+	stepBits uint8 = 12
 )
 
 // A Node struct holds the basic information needed for a snowflake generator
@@ -41,11 +41,11 @@ type Node struct {
 func NewNode(node int64) (*Node, error) {
 	n := Node{}
 	n.node = node
-	n.nodeMax = -1 ^ (-1 << NodeBits)
-	n.nodeMask = n.nodeMax << StepBits
-	n.stepMask = -1 ^ (-1 << StepBits)
-	n.timeShift = NodeBits + StepBits
-	n.nodeShift = StepBits
+	n.nodeMax = -1 ^ (-1 << nodeBits)
+	n.nodeMask = n.nodeMax << stepBits
+	n.stepMask = -1 ^ (-1 << stepBits)
+	n.timeShift = nodeBits + stepBits
+	n.nodeShift = stepBits
 
 	if n.node < 0 || n.node > n.nodeMax {
 		return nil, errors.New("zoo-library-snowflake：节点ID必须在 0 - " + strconv.FormatInt(n.nodeMax, 10))
@@ -53,7 +53,7 @@ func NewNode(node int64) (*Node, error) {
 
 	var curTime = time.Now()
 	// add time.Duration to curTime to make sure we use the monotonic clock if available
-	n.epoch = curTime.Add(time.Unix(Epoch/1000, (Epoch%1000)*1000000).Sub(curTime))
+	n.epoch = curTime.Add(time.Unix(epoch/1000, (epoch%1000)*1000000).Sub(curTime))
 
 	return &n, nil
 }
