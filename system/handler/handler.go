@@ -145,6 +145,13 @@ func (m *MHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//PreInit为前置调用，不允许外部访问
+	if strings.Index(methodName, "preInit") >= 0 || strings.Index(methodName, "PreInit") >= 0 {
+		mLog.Warn(cFunc.ClientIP(r) + " - " + r.RequestURI + " - " + className + "-" + methodName + " - IP被禁止")
+		http.Error(w, cFunc.ClientIP(r)+"被禁止", http.StatusNotFound)
+		return
+	}
+
 	//handler解析到class的实例
 	controlInterface, err := m.parseCompile(className)
 	if err != nil {
