@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"crypto/md5"
 	"crypto/rand"
+	"crypto/tls"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -256,22 +257,28 @@ func GetPost(method string, sUrl string, data map[string]string, head map[string
 	}
 
 	client := &http.Client{
-		/*Transport: &http.Transport{
+		//Timeout: time.Second * 5,
+		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true, //跳过https验证
 			},
-		},*/
+		},
 	}
 	response, err := client.Do(req)
 	if err != nil {
 		return "", err
 	}
 
+	defer response.Body.Close()
+
+	if response.StatusCode != 200 {
+		return "", errors.New(response.Status)
+	}
+
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return "", err
 	}
-	defer response.Body.Close()
 
 	return string(body), nil
 }
