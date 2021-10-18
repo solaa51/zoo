@@ -28,9 +28,6 @@ ignoreIpCheck = ""
     index = "index.html"
 ##########以下配置修改 会实时生效 end ############
 
-[snackWorker]
-    workerId = 1
-
 
 #http配置
 [http]
