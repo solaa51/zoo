@@ -161,7 +161,7 @@ func (m *MHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//记录访问日志
-	mLog.Info(cFunc.ClientIP(r) + " - " + r.RequestURI + " - " + className + "-" + methodName + " - " + r.Header.Get("User-Agent"))
+	mLog.Info(cFunc.ClientIP(r) + " - " + r.RequestURI + " - " + r.Header.Get("User-Agent"))
 
 	/*//设置handler超时ctx
 	ctx := m.ctx
@@ -194,6 +194,7 @@ func (m *MHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				var buf [4096]byte
 				n := runtime.Stack(buf[:], false)
 				mLog.Error("PANIC:", string(buf[:n]))
+				http.Error(w, "请求处理异常", http.StatusBadGateway)
 			}
 		}
 	}()

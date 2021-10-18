@@ -3,6 +3,9 @@ appName = "zoo 服务中心"
 appVersion = "3.0"
 appVerMark = "基础版本"
 
+#服务器节点ID 相同的服务需要确保各机器的ID不同，用于分布式生成唯一ID 取值范围：1-1024
+serverId = 1
+
 ##########以下配置修改 会实时生效 start ############
 #环境标识  发布dev   测试test
 env = "test"

@@ -7,6 +7,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/solaa51/zoo/system/cFunc"
 	"github.com/solaa51/zoo/system/config"
+	"github.com/solaa51/zoo/system/library/snowflake"
 	"github.com/solaa51/zoo/system/mLog"
 	"io/ioutil"
 	"net/http"
@@ -25,6 +26,7 @@ var (
 type Con struct {
 	Request        *http.Request
 	ResponseWriter http.ResponseWriter
+	RequestId      string //分布式唯一ID
 
 	Header http.Header
 
@@ -37,6 +39,7 @@ type Con struct {
 
 	CommonParam CommonParam //公共参数 验证签名的请求使用
 	YewuParam   YewuParam   //业务参数 验证签名的请求使用
+	Node        *snowflake.Node
 }
 
 func New(w http.ResponseWriter, r *http.Request, className string, methodName string) (*Con, error) {
@@ -45,6 +48,7 @@ func New(w http.ResponseWriter, r *http.Request, className string, methodName st
 		ClassName:      className,
 		MethodName:     methodName,
 		ResponseWriter: w,
+		RequestId:      config.Info().ServerNode.NextIdStr(),
 	}
 
 	//解析请求参数 以及body数据
@@ -69,6 +73,8 @@ func New(w http.ResponseWriter, r *http.Request, className string, methodName st
 			return nil, err
 		}
 	}
+
+	mLog.Info("访问记录：[" + ctx.RequestId + "] start -- " + ctx.ClassName + "/" + ctx.MethodName)
 
 	return ctx, nil
 }
@@ -400,12 +406,19 @@ func (c *Con) JsonReturn(code int, data interface{}, format string, a ...interfa
 
 	header := c.ResponseWriter.Header()
 	header.Set("Content-Type", "application/json;charset=UTF-8")
-	b, _ := jsoniter.Marshal(st)
-	n, err := c.ResponseWriter.Write(b)
+	b, err := jsoniter.Marshal(st)
 	if err != nil {
-		fmt.Println("ERROR:", c.Request.URL, n, err)
-		return
+		mLog.Error("访问记录：["+c.RequestId+"] end -- "+c.ClassName+"/"+c.MethodName, err.Error())
+		panic("json序列化报错")
 	}
+	_, err = c.ResponseWriter.Write(b)
+	if err != nil {
+		mLog.Error("访问记录：["+c.RequestId+"] end -- "+c.ClassName+"/"+c.MethodName, err.Error())
+		panic("写入response报错")
+	}
+
+	mLog.Info("访问记录：["+c.RequestId+"] end -- "+c.ClassName+"/"+c.MethodName, string(b))
+
 	panic(JSONRETURN)
 }
 

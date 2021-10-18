@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/solaa51/zoo/system/cFunc"
 	"github.com/solaa51/zoo/system/library/fileMonitor"
+	"github.com/solaa51/zoo/system/library/snowflake"
 	"github.com/solaa51/zoo/system/mLog"
 	"os"
 	"strings"
@@ -37,6 +38,10 @@ type Config struct {
 
 	//pprof配置
 	Pprof Http `toml:"pprof"`
+
+	//服务实例节点
+	ServerId   int64 `toml:"serverId"`
+	ServerNode *snowflake.Node
 
 	/******以下为自动判断 生成配置******/
 	configPath string //程序配置文件所在目录
@@ -120,6 +125,15 @@ func New(configFileName string) *Config {
 	if err != nil {
 		mLog.Fatal("未能加载配置文件", err)
 	}
+
+	if cc.ServerId == 0 {
+		mLog.Fatal("请配置服务节点ID：1-1024", err)
+	}
+	node, err := snowflake.NewNode(cc.ServerId)
+	if err != nil {
+		mLog.Fatal("请配置服务节点ID：1-1024", err)
+	}
+	cc.ServerNode = node
 
 	if err = cc.checkParam(); err != nil {
 		mLog.Fatal(err)
