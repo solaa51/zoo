@@ -7,6 +7,12 @@ import (
 	"time"
 )
 
+/**
+生成的ID为64位的二进制数据
+1[符号位固定表示正数] 41[时间戳]  10[机器编号ID] 12[时间戳的当前机器唯一数会累加]
+10位机器编号可表示：1-1023
+*/
+
 var (
 	// epoch is set to the twitter snowflake epoch of Nov 04 2010 01:42:54 UTC in milliseconds
 	// You may customize this to set a different epoch for your application.
@@ -26,8 +32,8 @@ type Node struct {
 	mu    sync.Mutex
 	epoch time.Time
 	time  int64
-	node  int64
-	step  int64
+	node  int64 // 节点ID 10位
+	step  int64 // 序列号 12位
 
 	nodeMax   int64
 	nodeMask  int64
@@ -93,4 +99,12 @@ func (n *Node) generate() int64 {
 	n.mu.Unlock()
 
 	return r
+}
+
+// ServerId 根据生成的UUID计算出机器ID
+func ServerId(sid string) int64 {
+	sidInt, _ := strconv.ParseInt(sid, 10, 64)
+	nodeMax := int64(-1 ^ (-1 << nodeBits)) // 10为则为 1023
+	snow := sidInt >> stepBits              //右移12位 暴露出 码的前 1+41+10位
+	return snow & nodeMax                   //位与 过滤掉前面的，只留下后面10位数字
 }

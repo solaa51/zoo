@@ -2,6 +2,7 @@ package orm
 
 import (
 	"errors"
+	"fmt"
 	"github.com/BurntSushi/toml"
 	"github.com/solaa51/zoo/system/cFunc"
 	"github.com/solaa51/zoo/system/mLog"
@@ -9,6 +10,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	"time"
 )
 
 /*
@@ -41,6 +43,14 @@ func ShowSqlIndex(dbIndex int) {
 	if dbIndex >= 0 && len(dbs) > dbIndex {
 		dbs[dbIndex].db.Logger = logger.Default.LogMode(logger.Info)
 	}
+}
+
+// DBSlowLogWrite 自定义日志输出 存放到日志文件中
+type DBSlowLogWrite struct{}
+
+func (l *DBSlowLogWrite) Printf(format string, v ...interface{}) {
+	logStr := fmt.Sprintf(format, v...)
+	mLog.Warn(logStr)
 }
 
 func init() {
@@ -76,6 +86,11 @@ func init() {
 			NamingStrategy: schema.NamingStrategy{
 				SingularTable: true, //使用单表名
 			},
+			Logger: logger.New(&DBSlowLogWrite{}, logger.Config{
+				SlowThreshold: 200 * time.Millisecond,
+				Colorful:      true,
+				LogLevel:      logger.Warn,
+			}),
 		})
 		if err != nil {
 			mLog.Fatal("连接数据库-"+v.Mark+"-失败：", err.Error())
