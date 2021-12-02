@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-var config = New("app.toml")
+var config *Config
 
 // Http http服务配置
 type Http struct {
@@ -139,11 +139,6 @@ func New(configFileName string) *Config {
 		mLog.Fatal(err)
 	}
 
-	//包含一次冗余调用
-	fileMonitor.New(cc.configPath+configFileName, func(i interface{}) {
-		resetConfig(cc, configFileName)
-	})
-
 	return cc
 }
 
@@ -261,4 +256,14 @@ func resetConfig(con *Config, configFileName string) {
 	}
 
 	mLog.SetEvn(cc.Env)
+}
+
+func init() {
+	configFileName := "app.toml"
+	config = New(configFileName)
+
+	//包含一次冗余调用
+	fileMonitor.New(config.configPath+configFileName, func(i interface{}) {
+		resetConfig(config, configFileName)
+	})
 }
