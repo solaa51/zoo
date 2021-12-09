@@ -391,21 +391,28 @@ func (c *Con) JsonReturn(code int, data interface{}, format string, a ...interfa
 		msg = format
 	}
 
+	header := c.ResponseWriter.Header()
+	header.Set("Content-Type", "application/json;charset=UTF-8")
+
+	switch data.(type) {
+	case string:
+		if data.(string) == "" { //空字符串 替换为空struct
+			data = struct{}{}
+		}
+	}
+
 	//json返回数据
 	type JsonErr struct {
 		Msg  string      `json:"msg"`
 		Ret  int         `json:"ret"`
 		Data interface{} `json:"data"`
 	}
-
 	st := &JsonErr{
 		Msg:  msg,
 		Ret:  code,
 		Data: data,
 	}
 
-	header := c.ResponseWriter.Header()
-	header.Set("Content-Type", "application/json;charset=UTF-8")
 	b, err := jsoniter.Marshal(st)
 	if err != nil {
 		mLog.Error("访问记录：["+c.RequestId+"] end -- "+c.ClassName+"/"+c.MethodName, err.Error())

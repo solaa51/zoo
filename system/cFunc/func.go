@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -105,7 +104,7 @@ func Md5(s string) string {
 //正式环境下返回 可执行文件的路径
 //区分 go run 下执行 还是 go build 之后的可执行文件 按系统区分
 func GetAppDir() string {
-	var dir string
+	/*var dir string
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0])) //返回绝对路径  filepath.Dir(os.Args[0])去除最后一个元素的路径
 	if err != nil {
 		log.Fatal(err)
@@ -128,6 +127,13 @@ func GetAppDir() string {
 	}
 
 	//return strings.Replace(dir, "\\", "/", -1) + "/" //将\替换成/
+	return dir + string(os.PathSeparator)*/
+
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+
 	return dir + string(os.PathSeparator)
 }
 
