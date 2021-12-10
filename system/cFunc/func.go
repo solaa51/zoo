@@ -271,6 +271,7 @@ func GetPost(method string, sUrl string, data map[string]string, head map[string
 		},
 	}
 	response, err := client.Do(req)
+	_ = req.Body.Close()
 	if err != nil {
 		return "", err
 	}
