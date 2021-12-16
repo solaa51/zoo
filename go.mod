@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/BurntSushi/toml v0.3.1
+	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/json-iterator/go v1.1.11

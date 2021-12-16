@@ -5,4 +5,4 @@
     tools 
     TableToStruct 将数据库表 转换为struct结构输出
 
-        example: orm.TableToStruct(0, "admin")
+        example: orm.TableToStruct(dbName, "admin")
