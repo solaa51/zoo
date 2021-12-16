@@ -2,10 +2,12 @@ package config
 
 import (
 	"errors"
+	"github.com/BurntSushi/toml"
 	"github.com/solaa51/zoo/system/cFunc"
 	"github.com/solaa51/zoo/system/library/fileMonitor"
 	"github.com/solaa51/zoo/system/library/snowflake"
 	"github.com/solaa51/zoo/system/mLog"
+	"github.com/solaa51/zoo/system/path"
 	"os"
 	"strings"
 )
@@ -121,9 +123,12 @@ func New(configFileName string) *Config {
 	}
 
 	var err error
-	cc.configPath, err = cFunc.LoadConfig(configFileName, cc)
+
+	cc.configPath, err = path.ConfigsDir("")
+
+	_, err = toml.DecodeFile(cc.configPath+configFileName, cc)
 	if err != nil {
-		mLog.Fatal("未能加载配置文件", err)
+		mLog.Fatal("无法解析配置文件:", cc.configPath+configFileName, err)
 	}
 
 	if cc.ServerId == 0 {
@@ -203,13 +208,18 @@ func (c *Config) checkParam() error {
 func resetConfig(con *Config, configFileName string) {
 	var err error
 	cc := &Config{}
-	cc.configPath, err = cFunc.LoadConfig(configFileName, cc)
+
+	if _, err := os.Stat(con.configPath + configFileName); err != nil {
+		mLog.Fatal("未能加载配置文件", err)
+	}
+
+	_, err = toml.DecodeFile(con.configPath+configFileName, cc)
 	if err != nil {
-		mLog.Error("未能加载配置文件", err)
+		mLog.Fatal("无法解析配置文件:", con.configPath+configFileName, err)
 	}
 
 	if err = cc.checkParam(); err != nil {
-		mLog.Error(err)
+		mLog.Fatal(err)
 	}
 
 	//修改可更改的配置项

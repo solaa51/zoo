@@ -9,7 +9,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/BurntSushi/toml"
 	jsoniter "github.com/json-iterator/go"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
@@ -137,7 +136,7 @@ func GetAppDir() string {
 	return dir + string(os.PathSeparator)
 }
 
-// FindConfigPath 查找配置文件路径
+/*// FindConfigPath 查找配置文件路径
 // 大概有三种方式
 // 1. shell所在即为执行程序所在目录
 // 2. 相对路径调用的形式[.main]
@@ -172,9 +171,9 @@ func FindConfigPath(fi string) (string, error) {
 	}
 
 	return "", errors.New("找不到配置文件: " + fi)
-}
+}*/
 
-// LoadConfig 加载配置文件
+/*// LoadConfig 加载配置文件
 //fi 配置文件名
 //st 待解析的结构体(地址)
 //返回 配置文件路径不包含文件名  错误
@@ -192,7 +191,7 @@ func LoadConfig(fi string, st interface{}) (string, error) {
 	}
 
 	return cf, nil
-}
+}*/
 
 // SignPost 加密发送post请求到接口
 func SignPost(domain string, key string, secret string, control string, method string, data map[string]string) (string, error) {
