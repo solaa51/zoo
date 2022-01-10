@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/BurntSushi/toml"
-	"github.com/fsnotify/fsnotify"
 	"github.com/solaa51/zoo/system/mLog"
 	"github.com/solaa51/zoo/system/path"
 	"gorm.io/driver/mysql"
@@ -158,6 +157,7 @@ func (l *slowSqlWrite) Printf(format string, v ...interface{}) {
 // 3. 按照db配置中的uName交叉比对 数据库的修改、上线、移除
 // autoUpdateDbInstance
 func autoUpdateDbInstance() {
+	/* Mac下使用是可以的 linux下存在问题 无法重复通知
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		mLog.Error("pkg.orm 数据库配置变化监控失败：", err)
@@ -174,12 +174,12 @@ func autoUpdateDbInstance() {
 	for {
 		select {
 		case ev := <-watcher.Events:
-			if ev.Op&fsnotify.Chmod == fsnotify.Chmod {
+			if ev.Op == fsnotify.Chmod || ev.Op == fsnotify.Remove {
 				mLog.Warn("pkg.orm 数据库配置文件变化，更新数据库连接信息")
 				initDbs()
 			}
 		}
-	}
+	}*/
 }
 
 /***便捷方法***/
