@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	jsoniter "github.com/json-iterator/go"
+	"github.com/solaa51/zoo/system/path"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
 	"hash/crc32"
@@ -103,37 +104,8 @@ func Md5(s string) string {
 //正式环境下返回 可执行文件的路径
 //区分 go run 下执行 还是 go build 之后的可执行文件 按系统区分
 func GetAppDir() string {
-	/*var dir string
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0])) //返回绝对路径  filepath.Dir(os.Args[0])去除最后一个元素的路径
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	//如果路径中 含有 /T/go-build 字符 则可认为是 go run 下执行的临时程序
-	switch runtime.GOOS {
-	case "darwin":
-		if strings.Contains(dir, "/T/go-build") {
-			dir, _ = os.Getwd()
-		}
-
-		return dir + string(os.PathSeparator)
-	case "windows":
-		if strings.Contains(dir, "\\Temp\\go-build") {
-			dir, _ = os.Getwd()
-		}
-		return dir + string(os.PathSeparator)
-	default:
-	}
-
-	//return strings.Replace(dir, "\\", "/", -1) + "/" //将\替换成/
-	return dir + string(os.PathSeparator)*/
-
-	dir, err := os.Getwd()
-	if err != nil {
-		return ""
-	}
-
-	return dir + string(os.PathSeparator)
+	str, _ := path.HomeDir()
+	return str
 }
 
 /*// FindConfigPath 查找配置文件路径

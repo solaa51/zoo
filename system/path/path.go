@@ -3,6 +3,8 @@ package path
 import (
 	"errors"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -12,9 +14,26 @@ import (
 
 // HomeDir 解析程序执行根目录 包含os.PathSeparator
 func HomeDir() (string, error) {
-	dir, err := os.Getwd()
+	var dir string
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0])) //返回绝对路径  filepath.Dir(os.Args[0])去除最后一个元素的路径
 	if err != nil {
 		return "", err
+	}
+
+	//如果路径中 含有 /T/go-build 字符 则可认为是 go run 下执行的临时程序
+	switch runtime.GOOS {
+	case "darwin":
+		if strings.Contains(dir, "/T/go-build") {
+			dir, _ = os.Getwd()
+		}
+
+		return dir + string(os.PathSeparator), nil
+	case "windows":
+		if strings.Contains(dir, "\\Temp\\go-build") {
+			dir, _ = os.Getwd()
+		}
+		return dir + string(os.PathSeparator), nil
+	default:
 	}
 
 	return dir + string(os.PathSeparator), nil
