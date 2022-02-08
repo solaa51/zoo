@@ -493,7 +493,7 @@ func ClientIP(r *http.Request) string {
 
 // InnerIP 判断是否为内网ip
 func InnerIP(ip string) bool {
-	if ip == "::1" { //本机
+	if ip == "::1" || ip == "localhost" { //本机
 		return true
 	} else if strings.HasPrefix(ip, "192.168.") { //内网地址
 		return true
@@ -512,7 +512,9 @@ func LocalIPV4() string {
 		// 检查ip地址判断是否回环地址
 		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 			if ipnet.IP.To4() != nil {
-				return ipnet.IP.String()
+				if !strings.HasPrefix(ipnet.IP.String(), "169.254") { //微软保留地址
+					return ipnet.IP.String()
+				}
 			}
 		}
 	}
