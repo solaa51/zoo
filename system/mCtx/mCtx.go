@@ -373,10 +373,10 @@ func (c *Con) YewuParamString(param string, dec string, request bool, min int64,
 }
 
 // WebSocket 升级请求为websocket
-func (c *Con) WebSocket() (*websocket.Conn, error) {
+func (c *Con) WebSocket(checkOrigin bool) (*websocket.Conn, error) {
 	upgrade := websocket.Upgrader{}
 	upgrade.CheckOrigin = func(r *http.Request) bool {
-		return true
+		return checkOrigin
 	}
 
 	conn, err := upgrade.Upgrade(c.ResponseWriter, c.Request, nil)
