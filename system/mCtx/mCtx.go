@@ -413,18 +413,18 @@ func (c *Con) JsonReturn(code int, data interface{}, format string, a ...interfa
 		Data: data,
 	}
 
-	if code != 0 {
-		b, err := jsoniter.Marshal(st)
-		if err != nil {
-			mLog.Error("访问记录：["+c.RequestId+"] end -- "+c.ClassName+"/"+c.MethodName, err.Error())
-			panic("json序列化报错")
-		}
-		_, err = c.ResponseWriter.Write(b)
-		if err != nil {
-			mLog.Error("访问记录：["+c.RequestId+"] end -- "+c.ClassName+"/"+c.MethodName, err.Error())
-			panic("写入response报错")
-		}
+	b, err := jsoniter.Marshal(st)
+	if err != nil {
+		mLog.Error("访问记录：["+c.RequestId+"] end -- "+c.ClassName+"/"+c.MethodName, err.Error())
+		panic("json序列化报错")
+	}
+	_, err = c.ResponseWriter.Write(b)
+	if err != nil {
+		mLog.Error("访问记录：["+c.RequestId+"] end -- "+c.ClassName+"/"+c.MethodName, err.Error())
+		panic("写入response报错")
+	}
 
+	if code != 0 {
 		mLog.Info("访问记录：["+c.RequestId+"] end -- "+c.ClassName+"/"+c.MethodName, string(b))
 	}
 
